@@ -1,20 +1,44 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class LianaController : MonoBehaviour
 {
     Animator anim;
+    public AudioClip lianaAttackSound;
+    public bool rightSide = true;
+    GameObject playerInRange = null;
     // Start is called before the first frame update
     void Start()
     {
         anim = GetComponent<Animator>();
     }
 
+    void LianaAttack()
+    {
+        GetComponent<AudioSource>().PlayOneShot(lianaAttackSound);
+        if (playerInRange != null)
+        {
+            Debug.Log(playerInRange);
+            playerInRange.GetComponent<Player>().TakeDamage();
+        }
+    }
+
     void OnTriggerEnter2D(Collider2D col)
     {
         if (col.gameObject.CompareTag("Player"))
-            anim.SetTrigger("attack");
+            playerInRange = col.gameObject;
+        if (col.gameObject.CompareTag("Player") && !col.gameObject.GetComponent<Player>().isDead)
+        {
+            if (rightSide)
+                anim.SetTrigger("attackLeft");
+            else
+                anim.SetTrigger("attackRight");
+        }
+    }
+
+    void OnTriggerExit2D(Collider2D col)
+    {
+        if (col.gameObject.CompareTag("Player"))
+            playerInRange = null; 
     }
 
     // Update is called once per frame

@@ -1,4 +1,3 @@
-using UnityEngine.AI;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -8,7 +7,12 @@ public class Player : MonoBehaviour
     Animator anim;
     Vector3 initalPos;
     bool isJumping = false;
-    bool isDead = false;
+    public bool isDead = false;
+    public AudioClip takeDamageSound;
+    public AudioClip jumpSound;
+    public AudioClip deathSound;
+    public AudioClip respawnSound;
+
 
     public int maxHp = 3;
     int currentHp;
@@ -22,6 +26,8 @@ public class Player : MonoBehaviour
 
     public void TakeDamage()
     {
+        anim.SetTrigger("takeDamage");
+        GetComponent<AudioSource>().PlayOneShot(takeDamageSound);
         currentHp--;
         if (currentHp == 0)
         {
@@ -29,6 +35,16 @@ public class Player : MonoBehaviour
             isDead = true;
             anim.SetBool("isDead", true);
         }
+    }
+
+    void PlayRespawnSound()
+    {
+        GetComponent<AudioSource>().PlayOneShot(respawnSound);
+    }
+
+    void PlayDeathSond()
+    {
+        GetComponent<AudioSource>().PlayOneShot(deathSound);
     }
 
     void SetRespawnBool()
@@ -82,6 +98,7 @@ public class Player : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space) && !isJumping && !isDead)
         {
+            GetComponent<AudioSource>().PlayOneShot(jumpSound);
             rb.AddForce(new Vector3(0, 150, 0) * 2);
             isJumping = true;
             anim.SetBool("isJumping", isJumping);

@@ -1,10 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class CactusController : MonoBehaviour
 {
     public GameObject projectile;
+    public bool rightSide = true;
 
     Animator anim;
 
@@ -15,12 +14,24 @@ public class CactusController : MonoBehaviour
         GameObject clone;
         clone = Instantiate(projectile);
         clone.transform.position = transform.position;
-        clone.GetComponent<Rigidbody2D>().velocity = transform.TransformDirection(Vector3.left * projectilePower);
+        if (rightSide)
+        {
+            clone.GetComponent<Rigidbody2D>().velocity = transform.TransformDirection(Vector3.left * projectilePower);
+            clone.GetComponent<Animator>().SetTrigger("left");
+        }
+        else
+        {
+            clone.GetComponent<Rigidbody2D>().velocity = transform.TransformDirection(Vector3.right * projectilePower);
+            clone.GetComponent<Animator>().SetTrigger("right");
+        }
     }
 
-    void OnTriggerEnter2D()
+    void OnTriggerEnter2D(Collider2D col)
     {
-        anim.SetTrigger("attack");
+        if(col.gameObject.CompareTag("Player") && !col.gameObject.GetComponent<Player>().isDead)
+        {
+            anim.SetTrigger("attackLeft");
+        }
     }
     // Start is called before the first frame update
     void Start()
