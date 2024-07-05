@@ -2,10 +2,12 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    public int speed = 2;
+    public static Player Instance { get; private set; }
+    public float speed = 2;
+    public int leafCount = 0;
+    public float jumpPower = 2;
     Rigidbody2D rb;
     Animator anim;
-    Vector3 initalPos;
     bool isJumping = false;
     public bool isDead = false;
     public AudioClip takeDamageSound;
@@ -13,12 +15,25 @@ public class Player : MonoBehaviour
     public AudioClip deathSound;
     public AudioClip respawnSound;
 
+    public Transform startTransform;
 
     public int maxHp = 3;
     int currentHp;
+
+    void Awake()
+    {
+        if (Instance != null  && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        else
+        {
+            DontDestroyOnLoad(gameObject);
+        }
+    }
     void Start()
     {
-        initalPos = transform.position;
         currentHp = maxHp;
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
@@ -52,8 +67,15 @@ public class Player : MonoBehaviour
         GameManager.Instance.PlayerRespawn();
         anim.SetBool("isDead", false);
         anim.SetBool("isRespawning", true);
-        transform.position = initalPos;
+        transform.position = startTransform.position;
         isDead = false;
+        currentHp = maxHp;
+    }
+
+    void SaveVar()
+    {
+        PlayerPrefs.SetInt("hp", currentHp);
+        PlayerPrefs.SetInt("leaf", leafCount);
     }
 
     void FixedUpdate()
@@ -80,9 +102,7 @@ public class Player : MonoBehaviour
     void OnCollisionEnter2D(Collision2D col)
     {
         if (col.gameObject.CompareTag("Trap"))
-        {
             anim.SetTrigger("takeDamage");
-        }
         isJumping = false;
         anim.SetBool("isJumping", isJumping);
     }
@@ -93,15 +113,23 @@ public class Player : MonoBehaviour
         anim.SetBool("isJumping", isJumping);
     }
 
+    void OnCollisionExit2D()
+    {
+        isJumping = true;
+    }
+
     // Update is called once per frame
     void Update()
     {
         if (Input.GetKeyDown(KeyCode.Space) && !isJumping && !isDead)
         {
             GetComponent<AudioSource>().PlayOneShot(jumpSound);
-            rb.AddForce(new Vector3(0, 150, 0) * 2);
+            rb.AddForce(new Vector3(0, 150, 0) * jumpPower);
             isJumping = true;
             anim.SetBool("isJumping", isJumping);
         }
+
+        if(Input.GetKeyDown(KeyCode.J))
+            PlayerPrefs.DeleteAll();
     }
 }

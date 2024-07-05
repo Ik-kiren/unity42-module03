@@ -19,6 +19,6 @@ public class FlowerProjectile : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Debug.Log(GetComponent<Rigidbody2D>().velocity);
+        
     }
 }

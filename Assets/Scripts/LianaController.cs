@@ -6,6 +6,7 @@ public class LianaController : MonoBehaviour
     public AudioClip lianaAttackSound;
     public bool rightSide = true;
     GameObject playerInRange = null;
+    float cooldownAttack;
     // Start is called before the first frame update
     void Start()
     {
@@ -26,12 +27,13 @@ public class LianaController : MonoBehaviour
     {
         if (col.gameObject.CompareTag("Player"))
             playerInRange = col.gameObject;
-        if (col.gameObject.CompareTag("Player") && !col.gameObject.GetComponent<Player>().isDead)
+        if (col.gameObject.CompareTag("Player") && !col.gameObject.GetComponent<Player>().isDead && cooldownAttack >= 2)
         {
             if (rightSide)
                 anim.SetTrigger("attackLeft");
             else
                 anim.SetTrigger("attackRight");
+            cooldownAttack = 0;
         }
     }
 
@@ -44,6 +46,6 @@ public class LianaController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        cooldownAttack += Time.deltaTime;
     }
 }
