@@ -706,7 +706,7 @@ GameObject:
   - component: {fileID: 777401825}
   - component: {fileID: 777401824}
   m_Layer: 5
-  m_Name: Image (1)
+  m_Name: SkullImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -992,7 +992,7 @@ GameObject:
   - component: {fileID: 1079188013}
   - component: {fileID: 1079188012}
   m_Layer: 5
-  m_Name: Image
+  m_Name: LeafImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1247,6 +1247,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1319879229}
+  - component: {fileID: 1319879230}
   m_Layer: 0
   m_Name: StagesDisplay
   m_TagString: Untagged
@@ -1272,6 +1273,20 @@ Transform:
   - {fileID: 1065686992}
   m_Father: {fileID: 1296098606}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1319879230
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1319879228}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41d422bb8dc5fd774adf0500a4c7d032, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  leafPointText: {fileID: 0}
+  deathCountText: {fileID: 0}
 --- !u!1 &1350142011
 GameObject:
   m_ObjectHideFlags: 0
