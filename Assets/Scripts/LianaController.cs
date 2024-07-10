@@ -4,7 +4,7 @@ public class LianaController : MonoBehaviour
 {
     Animator anim;
     public AudioClip lianaAttackSound;
-    public bool rightSide = true;
+    public bool rightSide = false;
     GameObject playerInRange = null;
     float cooldownAttack;
     // Start is called before the first frame update
@@ -29,7 +29,7 @@ public class LianaController : MonoBehaviour
             playerInRange = col.gameObject;
         if (col.gameObject.CompareTag("Player") && !col.gameObject.GetComponent<Player>().isDead && cooldownAttack >= 2)
         {
-            if (rightSide)
+            if (!rightSide)
                 anim.SetTrigger("attackLeft");
             else
                 anim.SetTrigger("attackRight");

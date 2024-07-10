@@ -1,8 +1,8 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
-    public static Player Instance { get; private set; }
     public float speed = 2;
     public int leafCount = 0;
     public float jumpPower = 2;
@@ -17,26 +17,24 @@ public class Player : MonoBehaviour
 
     public Transform startTransform;
 
-    public int maxHp = 3;
-    int currentHp;
+    public Slider hpSlider;
 
-    void Awake()
-    {
-        if (Instance != null  && Instance != this)
-        {
-            Destroy(gameObject);
-            return;
-        }
-        else
-        {
-            DontDestroyOnLoad(gameObject);
-        }
-    }
+    public int maxHp = 3;
+    public int currentHp;
     void Start()
     {
         currentHp = maxHp;
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
+    }
+
+    void SetPlayerPrefs()
+    {
+        if (PlayerPrefs.HasKey("hp") && PlayerPrefs.HasKey("leafpoint"))
+        {
+            currentHp = PlayerPrefs.GetInt("hp");
+            leafCount = PlayerPrefs.GetInt("leafPoint");
+        }
     }
 
     public void TakeDamage()
@@ -49,7 +47,16 @@ public class Player : MonoBehaviour
             GameManager.Instance.PlayerIsDead();
             isDead = true;
             anim.SetBool("isDead", true);
+            return;
         }
+        hpSlider.gameObject.SetActive(true);
+        hpSlider.value = currentHp;
+        PlayerPrefs.GetInt("hp", currentHp);
+    }
+
+    public void HideHp()
+    {
+        hpSlider.gameObject.SetActive(false);
     }
 
     void PlayRespawnSound()
@@ -116,6 +123,7 @@ public class Player : MonoBehaviour
     void OnCollisionExit2D()
     {
         isJumping = true;
+        anim.SetBool("isJumping", isJumping);
     }
 
     // Update is called once per frame
@@ -125,11 +133,9 @@ public class Player : MonoBehaviour
         {
             GetComponent<AudioSource>().PlayOneShot(jumpSound);
             rb.AddForce(new Vector3(0, 150, 0) * jumpPower);
-            isJumping = true;
-            anim.SetBool("isJumping", isJumping);
+            //isJumping = true;
+            //anim.SetBool("isJumping", isJumping);
         }
-
-        if(Input.GetKeyDown(KeyCode.J))
-            PlayerPrefs.DeleteAll();
+        hpSlider.gameObject.transform.position = transform.position;
     }
 }

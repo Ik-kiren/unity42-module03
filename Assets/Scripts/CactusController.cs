@@ -3,7 +3,7 @@ using UnityEngine;
 public class CactusController : MonoBehaviour
 {
     public GameObject projectile;
-    public bool rightSide = true;
+    public bool rightSide = false;
 
     Animator anim;
 
@@ -14,7 +14,7 @@ public class CactusController : MonoBehaviour
         GameObject clone;
         clone = Instantiate(projectile);
         clone.transform.position = transform.position;
-        if (rightSide)
+        if (!rightSide)
         {
             clone.GetComponent<Rigidbody2D>().velocity = transform.TransformDirection(Vector3.left * projectilePower);
             clone.GetComponent<Animator>().SetTrigger("left");

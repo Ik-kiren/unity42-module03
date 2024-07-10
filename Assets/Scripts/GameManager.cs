@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -7,7 +9,9 @@ public class GameManager : MonoBehaviour
 
     public static GameManager Instance { get; private set; }
     public GameObject fadeToBlack;
-    public List<GameObject> leafsInStage;
+    GameObject player;
+
+    GameObject pauseMenu;
 
     private void Awake()
     {
@@ -26,36 +30,57 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        GetLeafInStage();
+        player = GameObject.Find("Player");
+        pauseMenu = GameObject.Find("PauseMenu");
+        if (pauseMenu != null)
+            pauseMenu.SetActive(false);
     }
 
-    public void GetLeafInStage()
+    void ChangeScene(GameObject newScene)
     {
-        for (int i = 0; i < leafsInStage.Count; i++)
-        {
-            if (PlayerPrefs.HasKey(leafsInStage[i].name) && PlayerPrefs.GetInt(leafsInStage[i].name) == 1)
-                leafsInStage[i].SetActive(true);
-            else if (PlayerPrefs.HasKey(leafsInStage[i].name))
-                leafsInStage[i].SetActive(false);  
-        }
-    }
-
-    public void SaveLeafInStage()
-    {
-        for (int i = 0; i < leafsInStage.Count; i++)
-        {
-            if (leafsInStage[i].activeSelf)
-                PlayerPrefs.SetInt(leafsInStage[i].name, 1);   
-            else
-                PlayerPrefs.SetInt(leafsInStage[i].name, 0);  
-        }
+        SceneManager.LoadScene(newScene.name);
     }
 
     public void ChangeScene(int newSceneIndex)
     {
-        Debug.Log(SceneManager.sceneCountInBuildSettings);
         if (newSceneIndex < SceneManager.sceneCountInBuildSettings && newSceneIndex > 0)
             SceneManager.LoadScene(newSceneIndex);
+    }
+
+    public void QuitToTitle(Player player)
+    {
+        SavePlayerPrefs(player.currentHp, player.leafCount);
+        Time.timeScale = 1;
+        SceneManager.LoadScene("TitleMenuScene");
+    }
+
+    public void NewGame()
+    {
+        PlayerPrefs.DeleteAll();
+        SceneManager.LoadScene("Stage1");
+    }
+
+    public void ResumeGame()
+    {
+        SceneManager.LoadScene(PlayerPrefs.GetInt("stage"));
+    }
+
+    public void SetUIActive(GameObject UI)
+    {
+        UI.SetActive(true);
+    }
+    public void SetUIDeactive(GameObject UI)
+    {
+        UI.SetActive(false);
+        if (Time.timeScale == 0)
+            Time.timeScale = 1;
+    }
+
+    void SavePlayerPrefs(int hp, int leafPoint)
+    {
+        PlayerPrefs.SetInt("stage", SceneManager.GetActiveScene().buildIndex);
+        PlayerPrefs.SetInt("hp", hp);
+        PlayerPrefs.SetInt("leafPoint", leafPoint);
     }
 
     public void NextScene()
@@ -76,6 +101,18 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (pauseMenu.activeSelf == false)
+            {
+                pauseMenu.SetActive(true);
+                Time.timeScale = 0;
+            }
+            else
+            {
+                pauseMenu.SetActive(false);
+                Time.timeScale = 1;
+            }
+        }
     }
 }
