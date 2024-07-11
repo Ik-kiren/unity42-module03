@@ -1,6 +1,5 @@
+using System;
 using System.Collections.Generic;
-using Unity.VisualScripting;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -8,10 +7,11 @@ public class GameManager : MonoBehaviour
 {
 
     public static GameManager Instance { get; private set; }
-    public GameObject fadeToBlack;
-    GameObject player;
+    GameObject fadeToBlack;
+    public GameObject player;
 
     GameObject pauseMenu;
+    int deathCount = 0;
 
     private void Awake()
     {
@@ -26,61 +26,50 @@ public class GameManager : MonoBehaviour
             /*QualitySettings.vSyncCount = 0;
             Application.targetFrameRate = 30;*/
         }
+        DontDestroyOnLoad(gameObject);
     }
 
     void Start()
     {
+        /*player = GameObject.Find("Player");
+        pauseMenu = GameObject.Find("PauseMenu");
+        if (pauseMenu != null)
+            pauseMenu.SetActive(false);
+        deathCount = PlayerPrefs.GetInt("deathCount", 0);*/
+    }
+
+    void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        fadeToBlack = GameObject.Find("FadeToBlack");
         player = GameObject.Find("Player");
         pauseMenu = GameObject.Find("PauseMenu");
         if (pauseMenu != null)
             pauseMenu.SetActive(false);
+        deathCount = PlayerPrefs.GetInt("deathCount", 0);
     }
 
-    void ChangeScene(GameObject newScene)
+    public void SavePlayerPrefs(int hp, int leafPoint)
     {
-        SceneManager.LoadScene(newScene.name);
+        PlayerPrefs.SetInt("stage", SceneManager.GetActiveScene().buildIndex);
+        PlayerPrefs.SetInt("hp", hp);
+        PlayerPrefs.SetInt("leafPoint", leafPoint);
     }
+
 
     public void ChangeScene(int newSceneIndex)
     {
         if (newSceneIndex < SceneManager.sceneCountInBuildSettings && newSceneIndex > 0)
             SceneManager.LoadScene(newSceneIndex);
-    }
-
-    public void QuitToTitle(Player player)
-    {
-        SavePlayerPrefs(player.currentHp, player.leafCount);
-        Time.timeScale = 1;
-        SceneManager.LoadScene("TitleMenuScene");
-    }
-
-    public void NewGame()
-    {
-        PlayerPrefs.DeleteAll();
-        SceneManager.LoadScene("Stage1");
-    }
-
-    public void ResumeGame()
-    {
-        SceneManager.LoadScene(PlayerPrefs.GetInt("stage"));
-    }
-
-    public void SetUIActive(GameObject UI)
-    {
-        UI.SetActive(true);
-    }
-    public void SetUIDeactive(GameObject UI)
-    {
-        UI.SetActive(false);
-        if (Time.timeScale == 0)
-            Time.timeScale = 1;
-    }
-
-    void SavePlayerPrefs(int hp, int leafPoint)
-    {
-        PlayerPrefs.SetInt("stage", SceneManager.GetActiveScene().buildIndex);
-        PlayerPrefs.SetInt("hp", hp);
-        PlayerPrefs.SetInt("leafPoint", leafPoint);
     }
 
     public void NextScene()
@@ -90,6 +79,8 @@ public class GameManager : MonoBehaviour
 
     public void PlayerIsDead()
     {
+        deathCount++;
+        PlayerPrefs.SetInt("deathCount", deathCount);
         fadeToBlack.GetComponent<Animator>().SetTrigger("fade");
     }
 
@@ -113,6 +104,10 @@ public class GameManager : MonoBehaviour
                 pauseMenu.SetActive(false);
                 Time.timeScale = 1;
             }
+        }
+         if (Input.GetKeyDown(KeyCode.P))
+        {
+            PlayerPrefs.DeleteAll();
         }
     }
 }

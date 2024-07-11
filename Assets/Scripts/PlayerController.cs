@@ -4,6 +4,7 @@ using UnityEngine.UI;
 public class Player : MonoBehaviour
 {
     public float speed = 2;
+    public int totalLeafPoint = 0;
     public int leafCount = 0;
     public float jumpPower = 2;
     Rigidbody2D rb;
@@ -26,6 +27,8 @@ public class Player : MonoBehaviour
         currentHp = maxHp;
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
+        transform.position = startTransform.position;
+        totalLeafPoint = PlayerPrefs.GetInt("leafPoint", 0);
     }
 
     void SetPlayerPrefs()
@@ -77,12 +80,6 @@ public class Player : MonoBehaviour
         transform.position = startTransform.position;
         isDead = false;
         currentHp = maxHp;
-    }
-
-    void SaveVar()
-    {
-        PlayerPrefs.SetInt("hp", currentHp);
-        PlayerPrefs.SetInt("leaf", leafCount);
     }
 
     void FixedUpdate()
